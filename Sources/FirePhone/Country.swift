@@ -7,7 +7,6 @@
 //
 
 import Foundation
-
 import PhoneNumberKit
 
 struct Country: Identifiable, Hashable {
@@ -21,16 +20,10 @@ struct Country: Identifiable, Hashable {
   var code: String
   var prefix: String
   
-  private init() {
-    self.code = "CH"
-    self.name = Locale.current.localizedString(forRegionCode: "CH") ?? "Unknown"
-    self.prefix = "+41"
-  }
-  
-  init(countryCode: String, phoneNumberKit: PhoneNumberKit) {
+  init(countryCode: String = Locale.current.regionCode ?? "CH", phoneNumberKit: PhoneNumberKit = PhoneNumberKit() ) {
     self.name = Locale.current.localizedString(forRegionCode: countryCode) ?? "Unknown"
     self.code = countryCode
-    self.prefix = "+\(phoneNumberKit.countryCode(for: countryCode) ?? 1)"
+    self.prefix = "+\(phoneNumberKit.countryCode(for: countryCode) ?? 41)"
   }
   
   var flag: String {
