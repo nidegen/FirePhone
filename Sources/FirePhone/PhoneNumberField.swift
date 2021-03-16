@@ -9,6 +9,8 @@ struct PhoneNumberField: UIViewRepresentable {
   @Binding var validNumber: Bool
 
   private let textField = PhoneNumberTextField()
+  
+  var returnAction: (()->())?
 
   func makeUIView(context: Context) -> PhoneNumberTextField {
     textField.withPrefix = false
@@ -39,8 +41,34 @@ struct PhoneNumberField: UIViewRepresentable {
       self.parent = field
       super.init()
       field.textField.addTarget(self, action: #selector(editChanged), for: .editingChanged)
+      field.textField.addTarget(self, action: #selector(editChanged), for: .editingChanged)
       field.textField.textContentType = .telephoneNumber
+      addDoneCancelToolbar()
     }
+    
+    
+    func addDoneCancelToolbar() {
+        let toolbar: UIToolbar = UIToolbar()
+      toolbar.barStyle = .default
+      toolbar.items = [
+        UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped)),
+        UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: self, action: nil),
+        UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+      ]
+      toolbar.sizeToFit()
+
+      self.parent.textField.inputAccessoryView = toolbar
+    }
+
+    // Default actions:
+    @objc func doneButtonTapped() {
+      self.parent.textField.resignFirstResponder()
+      self.parent.returnAction?()
+    }
+    @objc func cancelButtonTapped() {
+      self.parent.textField.resignFirstResponder()
+    }
+
     
     @objc func editChanged() {
       self.parent.textField.text = self.parent.textField.text?.deletingPrefix(self.parent.currentCountry.prefix)
