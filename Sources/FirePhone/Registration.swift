@@ -15,6 +15,25 @@ class Registration: ObservableObject {
     }
   }
   
+  init() {
+    var allCodes = phoneNumberKit.allCountries()
+    allCodes = allCodes.filter { return $0 != "001" }.sorted {
+      let a = Locale.current.localizedString(forRegionCode: $0)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
+      let b = Locale.current.localizedString(forRegionCode: $1)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
+      return a < b
+    }
+    var tmp = [Country]()
+    tmp.reserveCapacity(allCodes.count)
+    
+    for countryCode in allCodes {
+      tmp.append(Country(countryCode: countryCode,  phoneNumberKit: phoneNumberKit))
+    }
+    
+    countries = tmp
+    
+    selectedCountry = Country(countryCode: defaultCode, phoneNumberKit: phoneNumberKit)
+  }
+  
   private var didSendVerification = false
   private let defaultCode = PhoneNumberKit.defaultRegionCode()
   let countries: [Country]
@@ -48,23 +67,17 @@ class Registration: ObservableObject {
     (selectedCountry.prefix + self.phoneNumber).replacingOccurrences(of: " ", with: "")
   }
   
-  init() {
-    var allCodes = phoneNumberKit.allCountries()
-    allCodes = allCodes.filter { return $0 != "001" }.sorted {
-      let a = Locale.current.localizedString(forRegionCode: $0)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
-      let b = Locale.current.localizedString(forRegionCode: $1)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
-      return a < b
+  func register() {
+    if phoneNumberIsValid {
+      register { result in
+        switch result {
+        case .failure(let error):
+          self.alert = AlertData(title: "Error with \(PartialFormatter().formatPartial(self.formattedNumber))", message: error.localizedDescription)
+        case .success():
+          self.didRegister = true
+        }
+      }
     }
-    var tmp = [Country]()
-    tmp.reserveCapacity(allCodes.count)
-    
-    for countryCode in allCodes {
-      tmp.append(Country(countryCode: countryCode,  phoneNumberKit: phoneNumberKit))
-    }
-    
-    countries = tmp
-    
-    selectedCountry = Country(countryCode: defaultCode, phoneNumberKit: phoneNumberKit)
   }
   
   private let echoUserVerificationIdKey = "EchoUserVerificationIdKey"

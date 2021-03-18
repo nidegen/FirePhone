@@ -50,7 +50,7 @@ public struct RegisterView: View {
           Divider()
           PhoneNumberField(placeHolder: "your phone number", phoneNumber: $registration.phoneNumber,
                            currentCountry: $registration.selectedCountry, validNumber: $registration.phoneNumberIsValid) {
-            continueAction()
+            self.registration.register()
           }
         }
         .font(.system(size: 32, weight: .light))
@@ -63,25 +63,13 @@ public struct RegisterView: View {
     .navigationBarTitle("Your Phone Number", displayMode: .inline)
   }
   
-  func continueAction() {
-    if registration.phoneNumberIsValid {
-      registration.register { result in
-        switch result {
-        case .failure(let error):
-          registration.alert = AlertData(title: "Error with \(PartialFormatter().formatPartial(registration.formattedNumber))", message: error.localizedDescription)
-        case .success():
-          registration.didRegister = true
-        }
-      }
-    }
-  }
-  
   var trailingItems: some ToolbarContent {
     ToolbarItemGroup(placement: .navigationBarTrailing) {
       Button("Continue") {
-        continueAction()
+        registration.register()
       }
       .disabled(!registration.phoneNumberIsValid)
+      
       NavigationLink(destination: VerificationView(registration: registration), isActive: $registration.didRegister) {
         EmptyView()
       }
