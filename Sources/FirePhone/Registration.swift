@@ -8,6 +8,7 @@ class Registration: ObservableObject {
   @Published var selectedCountry: Country
   @Published var didRegister = false
   @Published var alert: AlertData?
+  @Published var isVerifying = false
   
   @Published var verificationCode = "" {
     didSet {
@@ -52,13 +53,10 @@ class Registration: ObservableObject {
       verificationCode = filtered
     }
     if self.verificationCode.count == 6 && !didSendVerification {
-      self.alert = AlertData(title: "Verifying..", message: "Checking your code.")
-      
       self.verify { success in
         if success {
           
         }
-        self.alert = nil
       }
     }
   }
@@ -67,31 +65,24 @@ class Registration: ObservableObject {
     (selectedCountry.prefix + self.phoneNumber).replacingOccurrences(of: " ", with: "")
   }
   
-  func register() {
-    if phoneNumberIsValid {
-      register { result in
-        switch result {
-        case .failure(let error):
-          self.alert = AlertData(title: "Error with \(PartialFormatter().formatPartial(self.formattedNumber))", message: error.localizedDescription)
-        case .success():
-          self.didRegister = true
-        }
-      }
-    }
-  }
-  
   private let echoUserVerificationIdKey = "EchoUserVerificationIdKey"
   // Should replace the current view states\
   
-  func register(completion: @escaping (Result<Void, Error>)->()) {
+  func register(completion: ((Result<Void, Error>)->())? = nil) {
+    
+    if !phoneNumberIsValid {
+      self.alert = AlertData(title: "Invalid Phone Number", message: "Please enter a valid phone number.")
+      return
+    }
     Auth.auth().languageCode = Locale.current.languageCode
     
     PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
       if let error = error {
-        print(error.localizedDescription)
-        completion(.failure(error))
+        self.alert = AlertData(title: "Error with \(PartialFormatter().formatPartial(self.formattedNumber))", message: error.localizedDescription)
+        completion?(.failure(error))
       } else {
-        completion(.success(()))
+        completion?(.success(()))
+        self.didRegister = true
         UserDefaults.standard.set(verificationID, forKey: self.echoUserVerificationIdKey)
       }
     }
@@ -102,13 +93,14 @@ class Registration: ObservableObject {
       completion(false)
       return
     }
+    self.isVerifying = true
     let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationID,
                                                              verificationCode: verificationCode)
     
     Auth.auth().signIn(with: credential) { (authResult, error) in
       if error != nil {
         self.verificationCode = ""
-        self.alert = AlertData(title: "Error: Incorrect code", message: "Please try again")
+        self.isVerifying = false
       }
       completion(error == nil)
     }

@@ -21,12 +21,27 @@ public struct VerificationView: View {
       }
       Spacer()
     }
-    .alert($registration.alert)
-    .onDisappear {
-      registration.alert = nil
-    }
+    .overlay(progressView)
     .navigationBarTitle("Enter Verification Code", displayMode: .inline)
     .alert($registration.alert)
+  }
+  
+  @ViewBuilder
+  var progressView: some View {
+    if registration.isVerifying {
+      ZStack {
+        Color(UIColor.systemBackground)
+          .clipShape(RoundedRectangle(cornerRadius: 5))
+        VStack {
+          ProgressView()
+            .padding()
+          Text("Verifying...")
+            .font(.footnote)
+        }
+        .padding()
+      }
+      .ignoresSafeArea()
+    }
   }
 }
 

@@ -4,6 +4,7 @@ import PhoneNumberKit
 public struct RegisterView: View {
   @StateObject var registration = Registration()
   @State private var searchTerm = ""
+  @State var showVerificationScreen = false
   
   func countryRow(country: Country) -> some View {
     HStack {
@@ -17,6 +18,9 @@ public struct RegisterView: View {
   public init() {}
   
   public var body: some View {
+    if showVerificationScreen {
+      VerificationView(registration: registration)
+    } else {
     Form {
       Section() {
         Picker(selection: $registration.selectedCountry, label: Text("Your Country")) {
@@ -50,7 +54,7 @@ public struct RegisterView: View {
           Divider()
           PhoneNumberField(placeHolder: "your phone number", phoneNumber: $registration.phoneNumber,
                            currentCountry: $registration.selectedCountry, validNumber: $registration.phoneNumberIsValid) {
-            self.registration.register()
+            self.register()
           }
         }
         .font(.system(size: 32, weight: .light))
@@ -61,17 +65,24 @@ public struct RegisterView: View {
       trailingItems
     }
     .navigationBarTitle("Your Phone Number", displayMode: .inline)
+    }
   }
   
   var trailingItems: some ToolbarContent {
     ToolbarItemGroup(placement: .navigationBarTrailing) {
       Button("Continue") {
-        registration.register()
+        register()
       }
       .disabled(!registration.phoneNumberIsValid)
-      
-      NavigationLink(destination: VerificationView(registration: registration), isActive: $registration.didRegister) {
-        EmptyView()
+    }
+  }
+  
+  func register() {
+    registration.register { result in
+      if case .success = result {
+        withAnimation {
+          showVerificationScreen = true
+        }
       }
     }
   }
