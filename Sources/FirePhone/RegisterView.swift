@@ -27,7 +27,7 @@ public struct RegisterView: View {
           List {
             HStack {
               Image(systemName: "magnifyingglass")
-                .foregroundColor(Color(UIColor.secondaryLabel))
+                .foregroundColor(.secondary)
                 .padding(.leading, 16)
               TextField("Search", text: $searchTerm)
               Spacer()
@@ -40,7 +40,7 @@ public struct RegisterView: View {
                   Image(systemName: "xmark.circle.fill")
                     .resizable()
                     .frame(width: 16, height: 16)
-                    .foregroundColor(Color(UIColor.tertiaryLabel))
+                    .foregroundColor(.secondary)
                 })
               }
             }
@@ -52,10 +52,17 @@ public struct RegisterView: View {
         HStack {
           Text(registration.selectedCountry.prefix)
           Divider()
+          #if os(macOS)
+          TextField("pla", value: $registration.phoneNumber)
+          #else
+          
+          
           PhoneNumberField(placeHolder: "your phone number", phoneNumber: $registration.phoneNumber,
                            currentCountry: $registration.selectedCountry, validNumber: $registration.phoneNumberIsValid) {
             self.register()
           }
+          #endif
+
         }
         .font(.system(size: 32, weight: .light))
       }
@@ -69,7 +76,7 @@ public struct RegisterView: View {
   }
   
   var trailingItems: some ToolbarContent {
-    ToolbarItemGroup(placement: .navigationBarTrailing) {
+    ToolbarItemGroup(placement: .primaryAction) {
       Button("Continue") {
         register()
       }

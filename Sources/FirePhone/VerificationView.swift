@@ -14,7 +14,7 @@ public struct VerificationView: View {
           .textFieldStyle(RoundedBorderTextFieldStyle())
           .textContentType(.oneTimeCode)
           .padding()
-          .keyboardType(.numberPad)
+//          .keyboardType(.numberPad)
           .font(.system(size: 77, design: .monospaced))
           .width(340)
         Spacer()
@@ -22,7 +22,7 @@ public struct VerificationView: View {
       Spacer()
     }
     .overlay(progressView)
-    .navigationBarTitle("Enter Verification Code", displayMode: .inline)
+//    .navigationBarTitle("Enter Verification Code", displayMode: .inline)
     .alert($registration.alert)
   }
   
@@ -30,7 +30,7 @@ public struct VerificationView: View {
   var progressView: some View {
     if registration.isVerifying {
       ZStack {
-        Color(UIColor.systemBackground)
+        Color.secondary
           .clipShape(RoundedRectangle(cornerRadius: 5))
         VStack {
           ProgressView()

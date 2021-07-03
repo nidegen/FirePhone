@@ -1,6 +1,7 @@
 import SwiftUI
 import PhoneNumberKit
 
+#if canImport(UIKit)
 struct PhoneNumberField: UIViewRepresentable {
   var placeHolder: String
   
@@ -94,3 +95,4 @@ struct PhoneNumberField_Previews: PreviewProvider {
     PhoneNumberField(placeHolder: "Number", phoneNumber: .constant("023"), currentCountry: .constant(.ch), validNumber: .constant(true))
   }
 }
+#endif
