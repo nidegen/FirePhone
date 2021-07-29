@@ -27,12 +27,12 @@ class Registration: ObservableObject {
     tmp.reserveCapacity(allCodes.count)
     
     for countryCode in allCodes {
-      tmp.append(Country(countryCode: countryCode,  phoneNumberKit: phoneNumberKit))
+      tmp.append(Country(regionCode: countryCode,  phoneNumberKit: phoneNumberKit))
     }
     
     countries = tmp
     
-    selectedCountry = Country(countryCode: defaultCode, phoneNumberKit: phoneNumberKit)
+    selectedCountry = Country(regionCode: defaultCode, phoneNumberKit: phoneNumberKit)
   }
   
   private var didSendVerification = false

@@ -30,7 +30,7 @@ struct PhoneNumberField: UIViewRepresentable {
 //        self.phoneNumber = view.text ?? ""
 //      }
 //    }
-    view.partialFormatter.defaultRegion = currentCountry.code
+    view.partialFormatter.defaultRegion = currentCountry.regionCode
   }
   
   final class Coordinator: NSObject, UITextFieldDelegate {
@@ -71,7 +71,13 @@ struct PhoneNumberField: UIViewRepresentable {
 
     
     @objc func editChanged() {
+      if let regionCode = self.parent.textField.textRegionCode,
+         regionCode != self.parent.currentCountry.regionCode {
+        self.parent.currentCountry = Country(regionCode: regionCode, phoneNumberKit: self.parent.textField.phoneNumberKit)
+      }
+      
       self.parent.textField.text = self.parent.textField.text?.deletingPrefix(self.parent.currentCountry.prefix)
+      
       DispatchQueue.main.async {
         if self.parent.validNumber != self.parent.textField.isValidNumber {
           self.parent.validNumber = self.parent.textField.isValidNumber
