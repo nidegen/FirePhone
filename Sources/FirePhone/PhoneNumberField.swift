@@ -41,7 +41,6 @@ struct PhoneNumberField: UIViewRepresentable {
       self.parent = field
       super.init()
       field.textField.addTarget(self, action: #selector(editChanged), for: .editingChanged)
-      field.textField.addTarget(self, action: #selector(editChanged), for: .editingChanged)
       field.textField.textContentType = .telephoneNumber
       addDoneCancelToolbar()
     }
@@ -71,7 +70,7 @@ struct PhoneNumberField: UIViewRepresentable {
 
     
     @objc func editChanged() {
-      if let regionCode = self.parent.textField.textRegionCode,
+      if self.parent.textField.text?.hasPrefix("+") ?? false, let regionCode = self.parent.textField.textRegionCode,
          regionCode != self.parent.currentCountry.regionCode {
         self.parent.currentCountry = Country(regionCode: regionCode, phoneNumberKit: self.parent.textField.phoneNumberKit)
       }
