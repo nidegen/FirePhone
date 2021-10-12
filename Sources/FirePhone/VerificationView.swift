@@ -9,7 +9,7 @@ public struct VerificationView: View {
       Spacer()
       HStack {
         Spacer()
-        TextField("123456", text: $registration.verificationCode)
+        TextField("------", text: $registration.verificationCode)
           .minimumScaleFactor(0.7)
           .textFieldStyle(RoundedBorderTextFieldStyle())
           .textContentType(.oneTimeCode)
