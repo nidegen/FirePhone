@@ -4,6 +4,12 @@ struct CountrySelectionList: View {
   @State private var searchTerm = ""
   var registration: Registration
   
+  var filteredCountries: [Country] {
+    registration.countries.filter {
+      searchTerm.isEmpty ? true : $0.name.contains(searchTerm)
+    }
+  }
+  
   var body: some View {
     List {
       HStack {
@@ -25,7 +31,7 @@ struct CountrySelectionList: View {
           })
         }
       }
-      ForEach(registration.countries.filter({ searchTerm.isEmpty ? true : $0.name.contains(searchTerm) }), id: \.self) {
+      ForEach(filteredCountries) {
         countryRow(country: $0)
       }
     }
