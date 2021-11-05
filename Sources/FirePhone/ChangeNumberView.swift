@@ -2,10 +2,7 @@ import SwiftUI
 import Firebase
 
 public struct ChangeNumberView: View {
-  @State var verificationId: String?
-  @State var phoneNumber = ""
-  @State var verificationCode = ""
-  @State var alert: AlertData?
+  @StateObject var changer = Registration()
   
   public init(onSuccess: @escaping (String)->()) {
     self.onSuccess = onSuccess
@@ -15,41 +12,34 @@ public struct ChangeNumberView: View {
   var onSuccess: (String)->()
   
   public var body: some View {
-    if let verificationId = verificationId {
+    if changer.changeVerificationId != nil {
       VStack {
         Spacer()
-        VerificationCodeField(code: $verificationCode)
+        VerificationCodeField(code: $changer.changeVerificationCode)
         Button("Change") {
-          
-          let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationId, verificationCode: verificationCode)
-          
-          Auth.auth().currentUser?.updatePhoneNumber(credential, completion: { (error) in
-            if let error = error {
-              self.alert = AlertData(title: "Verification Error", message: error.localizedDescription)
-            } else {
-              onSuccess(phoneNumber)
-            }
-          })
+          changer.requestNumberChange(onSuccess: onSuccess)
         }
         Spacer()
       }
-      .alert($alert)
+      .alert($changer.alert)
     } else {
       Form {
-        TextField("Phone Number", text: $phoneNumber)
-        Button("Submit") {
-          PhoneAuthProvider.provider().verifyPhoneNumber(phoneNumber, uiDelegate: nil) { (verificationID, error) in
-            
-            if let error = error {
-              self.alert = AlertData(title: "Phone Number Error", message: error.localizedDescription)
-              return
-            }
-            
-            self.verificationId = verificationID
+        Section(footer: Text("Enter the new phone number that you want to use. Be aware that you cannot undo this.")) {
+          Picker(selection: $changer.selectedCountry, label: Text("Your Country")) {
+            CountrySelectionList(registration: changer)
           }
+          HStack {
+            Text(changer.selectedCountry.prefix)
+            Divider()
+            PhoneNumberField(placeHolder: "your phone number", phoneNumber: $changer.phoneNumber,
+                             currentCountry: $changer.selectedCountry, validNumber: $changer.phoneNumberIsValid) {
+              changer.checkNewNumber()
+            }
+          }
+          .font(.system(size: 32, weight: .light))
         }
       }
-      .alert($alert)
+      .alert($changer.alert)
     }
   }
 }

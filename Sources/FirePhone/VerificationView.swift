@@ -7,7 +7,15 @@ public struct VerificationView: View {
   public var body: some View {
     VStack {
       Spacer()
-      VerificationCodeField(code: $registration.verificationCode)
+      VStack {
+        Spacer().frame(height: 40)
+        VerificationCodeField(code: $registration.verificationCode)
+        Text("Enter the verification code that is sent to you by text message.")
+          .multilineTextAlignment(.center)
+          .frame(width: 180, height: 40)
+          .font(.caption2)
+          .foregroundColor(.secondary)
+      }
       Spacer()
     }
     .overlay(progressView)

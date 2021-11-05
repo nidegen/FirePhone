@@ -1,6 +1,7 @@
 import Foundation
 import Firebase
 import PhoneNumberKit
+import SwiftUI
 
 class Registration: ObservableObject {
   @Published var phoneNumber = ""
@@ -16,7 +17,13 @@ class Registration: ObservableObject {
     }
   }
   
-  init() {
+  @Published var changeVerificationId: String?
+  @Published var changeVerificationCode = ""
+  
+  var forNumberChange: Bool
+  
+  init(forNumberChange: Bool = false) {
+    self.forNumberChange = forNumberChange
     var allCodes = phoneNumberKit.allCountries()
     allCodes = allCodes.filter { return $0 != "001" }.sorted {
       let a = Locale.current.localizedString(forRegionCode: $0)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
@@ -84,6 +91,37 @@ class Registration: ObservableObject {
         completion?(.success(()))
         self.didRegister = true
         UserDefaults.standard.set(verificationID, forKey: self.echoUserVerificationIdKey)
+      }
+    }
+  }
+  
+  
+  func requestNumberChange(onSuccess: @escaping (String)->()) {
+    let credential = PhoneAuthProvider.provider().credential(withVerificationID: changeVerificationId ?? "", verificationCode: changeVerificationCode)
+    
+    Auth.auth().currentUser?.updatePhoneNumber(credential, completion: { (error) in
+      if let error = error {
+        self.alert = AlertData(title: "Verification Error", message: error.localizedDescription)
+      } else {
+        onSuccess(self.formattedNumber)
+      }
+    })
+  }
+  
+  func checkNewNumber() {
+    if !phoneNumberIsValid {
+      self.alert = AlertData(title: "Invalid Phone Number", message: "Please enter a valid phone number.")
+      return
+    }
+    PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
+      
+      if let error = error {
+        self.alert = AlertData(title: "Phone Number Error", message: error.localizedDescription)
+        return
+      }
+      
+      withAnimation {
+        self.changeVerificationId = verificationID
       }
     }
   }

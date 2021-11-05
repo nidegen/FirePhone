@@ -3,18 +3,8 @@ import PhoneNumberKit
 
 public struct RegisterView: View {
   @StateObject var registration = Registration()
-  @State private var searchTerm = ""
   @State var showVerificationScreen = false
-  
-  func countryRow(country: Country) -> some View {
-    HStack {
-      Text(country.flag)
-        .width(20)
-      Spacer().width(10)
-      Text(country.name)
-    }
-  }
-  
+
   public init() {}
   
   public var body: some View {
@@ -24,30 +14,7 @@ public struct RegisterView: View {
     Form {
       Section() {
         Picker(selection: $registration.selectedCountry, label: Text("Your Country")) {
-          List {
-            HStack {
-              Image(systemName: "magnifyingglass")
-                .foregroundColor(Color(UIColor.secondaryLabel))
-                .padding(.leading, 16)
-              TextField("Search", text: $searchTerm)
-              Spacer()
-              if searchTerm != "" {
-                Button(action: {
-                  withAnimation {
-                    searchTerm = ""
-                  }
-                }, label: {
-                  Image(systemName: "xmark.circle.fill")
-                    .resizable()
-                    .frame(width: 16, height: 16)
-                    .foregroundColor(Color(UIColor.tertiaryLabel))
-                })
-              }
-            }
-            ForEach(registration.countries.filter({ searchTerm.isEmpty ? true : $0.name.contains(searchTerm) }), id: \.self) {
-              countryRow(country: $0)
-            }
-          }
+          CountrySelectionList(registration: registration)
         }
         HStack {
           Text(registration.selectedCountry.prefix)
