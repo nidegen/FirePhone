@@ -7,18 +7,7 @@ public struct VerificationView: View {
   public var body: some View {
     VStack {
       Spacer()
-      HStack {
-        Spacer()
-        TextField("------", text: $registration.verificationCode)
-          .minimumScaleFactor(0.7)
-          .textFieldStyle(RoundedBorderTextFieldStyle())
-          .textContentType(.oneTimeCode)
-          .padding()
-          .keyboardType(.numberPad)
-          .font(.system(size: 77, design: .monospaced))
-          .width(340)
-        Spacer()
-      }
+      VerificationCodeField(code: $registration.verificationCode)
       Spacer()
     }
     .overlay(progressView)
