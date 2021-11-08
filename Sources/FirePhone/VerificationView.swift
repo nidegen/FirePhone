@@ -9,7 +9,9 @@ public struct VerificationView: View {
       Spacer()
       VStack {
         Spacer().frame(height: 40)
-        VerificationCodeField(code: $registration.verificationCode)
+        VerificationCodeField(code: $registration.verificationCode) {
+          registration.verifyCode()
+        }
         Text("Enter the verification code that is sent to you by text message.")
           .multilineTextAlignment(.center)
           .frame(width: 180, height: 40)
