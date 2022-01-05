@@ -8,7 +8,6 @@ public struct ChangeNumberView: View {
     self.onSuccess = onSuccess
   }
   
-  
   var onSuccess: (String)->()
   
   public var body: some View {
@@ -16,31 +15,42 @@ public struct ChangeNumberView: View {
       VStack {
         Spacer()
         VerificationCodeField(code: $changer.changeVerificationCode)
-        Button("Change") {
+        Button("System_Change") {
           changer.requestNumberChange(onSuccess: onSuccess)
         }
         Spacer()
       }
-      .alert($changer.alert)
+      .alert(item: $changer.alertMessage) { message in
+        Alert(title: Text(changer.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
+      }
     } else {
       Form {
-        Section(footer: Text("Enter the new phone number that you want to use. Be aware that you cannot undo this.")) {
-          Picker(selection: $changer.selectedCountry, label: Text("Your Country")) {
+        Section(footer: Text("Auth_EnterNewPhoneNumberExpl")) {
+          Picker(selection: $changer.selectedCountry, label: Text("Auth_YourCountry")) {
             CountrySelectionList(registration: changer)
           }
           HStack {
             Text(changer.selectedCountry.prefix)
             Divider()
-            PhoneNumberField(placeHolder: "your phone number", phoneNumber: $changer.phoneNumber,
-                             currentCountry: $changer.selectedCountry, validNumber: $changer.phoneNumberIsValid) {
+            PhoneNumberField(phoneNumber: $changer.phoneNumber,
+                             currentCountry: $changer.selectedCountry,
+                             validNumber: $changer.phoneNumberIsValid) {
               changer.checkNewNumber()
             }
           }
           .font(.system(size: 32, weight: .light))
         }
       }
-      .alert($changer.alert)
+      .alert(item: $changer.alertMessage) { message in
+        Alert(title: Text(changer.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
+      }
     }
+  }
+}
+
+extension String: Identifiable {
+  public var id: String {
+    self
   }
 }
 

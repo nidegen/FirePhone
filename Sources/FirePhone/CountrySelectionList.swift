@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CountrySelectionList: View {
+  @Environment(\.presentationMode) var presentation
   @State private var searchTerm = ""
   var registration: Registration
   
@@ -15,8 +16,7 @@ struct CountrySelectionList: View {
       HStack {
         Image(systemName: "magnifyingglass")
           .foregroundColor(Color(UIColor.secondaryLabel))
-          .padding(.leading, 16)
-        TextField("Search", text: $searchTerm)
+        TextField("System_Search", text: $searchTerm)
         Spacer()
         if searchTerm != "" {
           Button(action: {
@@ -38,12 +38,22 @@ struct CountrySelectionList: View {
   }
   
   func countryRow(country: Country) -> some View {
-    HStack {
-      Text(country.flag)
-        .width(20)
-      Spacer().width(10)
-      Text(country.name)
+    Button {
+      registration.selectedCountry = country
+      presentation.wrappedValue.dismiss()
+    } label: {
+      HStack {
+        Text(country.flag)
+          .width(20)
+        Spacer().width(10)
+        Text(country.name)
+        if country == registration.selectedCountry {
+          Spacer()
+          Image(systemName: "checkmark")
+        }
+      }
     }
+    .buttonStyle(.plain)
   }
 }
 

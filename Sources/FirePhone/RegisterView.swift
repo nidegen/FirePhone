@@ -4,40 +4,54 @@ import PhoneNumberKit
 public struct RegisterView: View {
   @StateObject var registration = Registration()
   @State var showVerificationScreen = false
-
+  
   public init() {}
   
   public var body: some View {
     if showVerificationScreen {
       VerificationView(registration: registration)
     } else {
-    Form {
-      Section() {
-        Picker(selection: $registration.selectedCountry, label: Text("Your Country")) {
-          CountrySelectionList(registration: registration)
-        }
-        HStack {
-          Text(registration.selectedCountry.prefix)
-          Divider()
-          PhoneNumberField(placeHolder: "your phone number", phoneNumber: $registration.phoneNumber,
-                           currentCountry: $registration.selectedCountry, validNumber: $registration.phoneNumberIsValid) {
-            self.register()
+      Form {
+        Section() {
+          NavigationLink {
+            CountrySelectionList(registration: registration)
+          } label: {
+            HStack {
+              Text("Auth_YourCountry")
+              Spacer()
+              HStack {
+                Text(registration.selectedCountry.flag)
+                  .width(20)
+                Spacer().width(10)
+                Text(registration.selectedCountry.name)
+              }
+            }
           }
+          HStack {
+            Text(registration.selectedCountry.prefix)
+            Divider()
+            PhoneNumberField(phoneNumber: $registration.phoneNumber,
+                             currentCountry: $registration.selectedCountry,
+                             validNumber: $registration.phoneNumberIsValid) {
+              self.register()
+            }
+          }
+          .font(.system(size: 32, weight: .light))
         }
-        .font(.system(size: 32, weight: .light))
       }
-    }
-    .alert($registration.alert)
-    .toolbar {
-      trailingItems
-    }
-    .navigationBarTitle("Your Phone Number", displayMode: .inline)
+      .alert(item: $registration.alertMessage) { message in
+        Alert(title: Text(registration.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
+      }
+      .toolbar {
+        trailingItems
+      }
+      .navigationBarTitle("Auth_YourPhoneNumber", displayMode: .inline)
     }
   }
   
   var trailingItems: some ToolbarContent {
     ToolbarItemGroup(placement: .navigationBarTrailing) {
-      Button("Continue") {
+      Button("System_Continue") {
         register()
       }
       .disabled(!registration.phoneNumberIsValid)

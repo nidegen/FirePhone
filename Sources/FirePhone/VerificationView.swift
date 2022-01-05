@@ -12,7 +12,7 @@ public struct VerificationView: View {
         VerificationCodeField(code: $registration.verificationCode) {
           registration.verifyCode()
         }
-        Text("Enter the verification code that is sent to you by text message.")
+        Text("Auth_EnterCodeExpl")
           .multilineTextAlignment(.center)
           .frame(width: 180, height: 40)
           .font(.caption2)
@@ -21,8 +21,10 @@ public struct VerificationView: View {
       Spacer()
     }
     .overlay(progressView)
-    .navigationBarTitle("Enter Verification Code", displayMode: .inline)
-    .alert($registration.alert)
+    .navigationBarTitle("Auth_EnterCode", displayMode: .inline)
+    .alert(item: $registration.alertMessage) { message in
+      Alert(title: Text(registration.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
+    }
   }
   
   @ViewBuilder
@@ -34,7 +36,7 @@ public struct VerificationView: View {
         VStack {
           ProgressView()
             .padding()
-          Text("Verifying...")
+          (Text("Auth_Verifying") + Text("..."))
             .font(.footnote)
         }
         .padding()

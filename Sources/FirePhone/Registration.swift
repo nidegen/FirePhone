@@ -8,7 +8,8 @@ class Registration: ObservableObject {
   @Published var phoneNumberIsValid = false
   @Published var selectedCountry: Country
   @Published var didRegister = false
-  @Published var alert: AlertData?
+  @Published var alertMessage: String?
+  @Published var alertTitle = "Error"
   @Published var isVerifying = false
   
   @Published var verificationCode = "" {
@@ -78,14 +79,16 @@ class Registration: ObservableObject {
   func register(completion: ((Result<Void, Error>)->())? = nil) {
     
     if !phoneNumberIsValid {
-      self.alert = AlertData(title: "Invalid Phone Number", message: "Please enter a valid phone number.")
+      alertTitle = "Invalid Phone Number"
+      alertMessage = "Please enter a valid phone number."
       return
     }
     Auth.auth().languageCode = Locale.current.languageCode
     
     PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
       if let error = error {
-        self.alert = AlertData(title: "Error with \(PartialFormatter().formatPartial(self.formattedNumber))", message: error.localizedDescription)
+        self.alertTitle = "Error with \(PartialFormatter().formatPartial(self.formattedNumber))"
+        self.alertMessage = error.localizedDescription
         completion?(.failure(error))
       } else {
         completion?(.success(()))
@@ -101,7 +104,8 @@ class Registration: ObservableObject {
     
     Auth.auth().currentUser?.updatePhoneNumber(credential, completion: { (error) in
       if let error = error {
-        self.alert = AlertData(title: "Verification Error", message: error.localizedDescription)
+        self.alertTitle = "Verification Error"
+        self.alertMessage = error.localizedDescription
       } else {
         onSuccess(self.formattedNumber)
       }
@@ -110,13 +114,15 @@ class Registration: ObservableObject {
   
   func checkNewNumber() {
     if !phoneNumberIsValid {
-      self.alert = AlertData(title: "Invalid Phone Number", message: "Please enter a valid phone number.")
+      self.alertTitle = "Invalid Phone Number"
+      self.alertMessage = "Please enter a valid phone number."
       return
     }
     PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
       
       if let error = error {
-        self.alert = AlertData(title: "Phone Number Error", message: error.localizedDescription)
+        self.alertTitle = "Phone Number Error"
+        self.alertMessage = error.localizedDescription
         return
       }
       
