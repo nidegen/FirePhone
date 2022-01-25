@@ -15,6 +15,7 @@ struct PhoneNumberField: UIViewRepresentable {
 
     textField.font = UIFont.systemFont(ofSize: 29, weight: .light)
     
+    
     return textField
   }
   
@@ -41,7 +42,7 @@ struct PhoneNumberField: UIViewRepresentable {
       field.textField.addTarget(self, action: #selector(editChanged), for: .editingChanged)
       field.textField.textContentType = .telephoneNumber
       field.textField.returnKeyType = .done
-      field.textField.addTarget(field.textField, action: #selector(doneButtonTapped), for: .editingDidEndOnExit)
+      field.textField.addTarget(self, action: #selector(doneButtonTapped), for: .editingDidEndOnExit)
     }
     
     // Default actions:
@@ -49,6 +50,14 @@ struct PhoneNumberField: UIViewRepresentable {
       self.parent.textField.resignFirstResponder()
       self.parent.returnAction?()
     }
+    
+//    func textFieldDidEndEditing(_ textField: UITextField) {
+//      doneButtonTapped()
+//    }
+//
+//    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
+//      doneButtonTapped()
+//    }
     
     @objc func editChanged() {
       if self.parent.textField.text?.hasPrefix("+") ?? false, let regionCode = self.parent.textField.textRegionCode,
