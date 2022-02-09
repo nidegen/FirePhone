@@ -8,7 +8,11 @@ struct VerificationCodeField: View {
   var body: some View {
     HStack {
       Spacer()
-      textField
+      TextField("------", text: $code)
+//        .submitLabel(.done)
+//        .onSubmit {
+//          onSubmit?()
+//        }
         .minimumScaleFactor(0.7)
         .textFieldStyle(RoundedBorderTextFieldStyle())
         .textContentType(.oneTimeCode)
@@ -17,19 +21,6 @@ struct VerificationCodeField: View {
         .font(.system(size: 77, design: .monospaced))
         .width(340)
       Spacer()
-    }
-  }
-  
-  @ViewBuilder
-  var textField: some View {
-    if #available(iOS 15.0, *) {
-      TextField("------", text: $code)
-        .submitLabel(.done)
-        .onSubmit {
-          onSubmit?()
-        }
-    } else {
-      TextField("------", text: $code)
     }
   }
 }
