@@ -12,6 +12,8 @@ public struct VerificationView: View {
         VerificationCodeField(code: $registration.verificationCode) {
           registration.verifyCode()
         }
+        .frame(width: 310, height: 50)
+        .padding( 30)
         Text("Auth_EnterCodeExpl")
           .multilineTextAlignment(.center)
           .frame(width: 180, height: 40)
