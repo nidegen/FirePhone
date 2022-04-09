@@ -25,7 +25,7 @@ public struct ChangeNumberView: View {
       }
     } else {
       Form {
-        Section(footer: Text("Auth_EnterNewPhoneNumberExpl")) {
+        Section(footer: Text("Auth_ChangeNumber_EnterNewNumberExplanation")) {
           Picker(selection: $changer.selectedCountry, label: Text("Auth_YourCountry")) {
             CountrySelectionList(registration: changer)
           }
