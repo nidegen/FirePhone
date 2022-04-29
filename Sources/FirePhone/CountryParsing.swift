@@ -8,12 +8,4 @@ extension PhoneNumberTextField {
     }
     return nil
   }
-  
-  var textRegionCode: String? {
-    if let number = self.text,
-       let phonenumber = try? self.phoneNumberKit.parse(number) {
-      return phoneNumberKit.getRegionCode(of: phonenumber)
-    }
-    return nil
-  }
 }

@@ -30,9 +30,11 @@ public struct RegisterView: View {
           HStack {
             Text(registration.selectedCountry.prefix)
             Divider()
-            PhoneNumberField(phoneNumber: $registration.phoneNumber,
-                             currentCountry: $registration.selectedCountry,
-                             validNumber: $registration.phoneNumberIsValid) {
+            PhoneNumberField(
+              phoneNumber: $registration.phoneNumber,
+              currentCountry: $registration.selectedCountry,
+              validNumber: $registration.phoneNumberIsValid
+            ) {
               self.register()
             }
           }

@@ -43,6 +43,7 @@ struct PhoneNumberField: UIViewRepresentable {
       field.textField.textContentType = .telephoneNumber
       field.textField.returnKeyType = .done
       field.textField.addTarget(self, action: #selector(doneButtonTapped), for: .editingDidEndOnExit)
+      field.textField.delegate = self
     }
     
     // Default actions:
@@ -50,23 +51,22 @@ struct PhoneNumberField: UIViewRepresentable {
       self.parent.textField.resignFirstResponder()
       self.parent.returnAction?()
     }
-    
-//    func textFieldDidEndEditing(_ textField: UITextField) {
-//      doneButtonTapped()
-//    }
-//
-//    func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
-//      doneButtonTapped()
-//    }
-    
-    @objc func editChanged() {
-      if self.parent.textField.text?.hasPrefix("+") ?? false, let regionCode = self.parent.textField.textRegionCode,
+      
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+      /// Updates the current country if a number wiht country code is entered, especially when pasting
+      if string.hasPrefix("+"),
+         let phonenumber = try? parent.textField.phoneNumberKit.parse(string),
+          let regionCode = parent.textField.phoneNumberKit.getRegionCode(of: phonenumber),
          regionCode != self.parent.currentCountry.regionCode {
+        parent.textField.partialFormatter.defaultRegion = regionCode
         self.parent.currentCountry = Country(regionCode: regionCode, phoneNumberKit: self.parent.textField.phoneNumberKit)
       }
       
-      self.parent.textField.text = self.parent.textField.text?.deletingPrefix(self.parent.currentCountry.prefix)
-      
+      return true
+    }
+        
+    @objc func editChanged() {
+      /// Updates the registration model number when text changed
       DispatchQueue.main.async {
         if self.parent.validNumber != self.parent.textField.isValidNumber {
           self.parent.validNumber = self.parent.textField.isValidNumber

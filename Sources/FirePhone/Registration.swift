@@ -21,10 +21,8 @@ class Registration: ObservableObject {
   @Published var changeVerificationId: String?
   @Published var changeVerificationCode = ""
   
-  var forNumberChange: Bool
   
-  init(forNumberChange: Bool = false) {
-    self.forNumberChange = forNumberChange
+  init() {
     var allCodes = phoneNumberKit.allCountries()
     allCodes = allCodes.filter { return $0 != "001" }.sorted {
       let a = Locale.current.localizedString(forRegionCode: $0)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
@@ -97,7 +95,6 @@ class Registration: ObservableObject {
       }
     }
   }
-  
   
   func requestNumberChange(onSuccess: @escaping (String)->()) {
     let credential = PhoneAuthProvider.provider().credential(withVerificationID: changeVerificationId ?? "", verificationCode: changeVerificationCode)
