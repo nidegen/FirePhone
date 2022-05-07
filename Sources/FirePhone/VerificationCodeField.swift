@@ -17,6 +17,7 @@ struct VerificationCodeField: UIViewRepresentable {
     textField.font = UIFont.monospacedSystemFont(ofSize: 77, weight: .regular)
     textField.isUserInteractionEnabled = true
     textField.textContentType = .oneTimeCode
+    textField.keyboardType = .numberPad
     textField.borderStyle = .roundedRect
     textField.placeholder = "------"
     
