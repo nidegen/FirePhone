@@ -1,5 +1,6 @@
 import PhoneNumberKit
 
+#if canImport(UIKit)
 extension PhoneNumberTextField {
   var textCountryCode: UInt64? {
     if let number = self.text,
@@ -9,3 +10,4 @@ extension PhoneNumberTextField {
     return nil
   }
 }
+#endif

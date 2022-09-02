@@ -1,6 +1,8 @@
 import SwiftUI
 import Combine
 
+
+
 public struct VerificationView: View {
   @ObservedObject var registration: Registration
   
@@ -23,7 +25,9 @@ public struct VerificationView: View {
       Spacer()
     }
     .overlay(progressView)
+    #if canImport(UIKit)
     .navigationBarTitle("Auth_EnterCode", displayMode: .inline)
+    #endif
     .alert(item: $registration.alertMessage) { message in
       Alert(title: Text(registration.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
     }
@@ -33,8 +37,13 @@ public struct VerificationView: View {
   var progressView: some View {
     if registration.isVerifying {
       ZStack {
+#if canImport(UIKit)
         Color(UIColor.systemBackground)
           .clipShape(RoundedRectangle(cornerRadius: 5))
+        #else
+        Color(NSColor.windowBackgroundColor)
+          .clipShape(RoundedRectangle(cornerRadius: 5))
+        #endif
         VStack {
           ProgressView()
             .padding()

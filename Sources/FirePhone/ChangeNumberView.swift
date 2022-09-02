@@ -32,11 +32,13 @@ public struct ChangeNumberView: View {
           HStack {
             Text(changer.selectedCountry.prefix)
             Divider()
+            #if canImport(UIKit)
             PhoneNumberField(phoneNumber: $changer.phoneNumber,
                              currentCountry: $changer.selectedCountry,
                              validNumber: $changer.phoneNumberIsValid) {
               changer.checkNewNumber()
             }
+            #endif
           }
           .font(.system(size: 32, weight: .light))
         }

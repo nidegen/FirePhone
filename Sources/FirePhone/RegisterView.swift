@@ -30,6 +30,7 @@ public struct RegisterView: View {
           HStack {
             Text(registration.selectedCountry.prefix)
             Divider()
+            #if canImport(UIKit)
             PhoneNumberField(
               phoneNumber: $registration.phoneNumber,
               currentCountry: $registration.selectedCountry,
@@ -37,6 +38,9 @@ public struct RegisterView: View {
             ) {
               self.register()
             }
+            #else
+            TextField("Phone", text: $registration.phoneNumber)
+            #endif
           }
           .font(.system(size: 32, weight: .light))
         }
@@ -47,17 +51,28 @@ public struct RegisterView: View {
       .toolbar {
         trailingItems
       }
+      #if canImport(UIKit)
       .navigationBarTitle("Auth_YourPhoneNumber", displayMode: .inline)
+      #endif
     }
   }
   
   var trailingItems: some ToolbarContent {
+#if canImport(UIKit)
     ToolbarItemGroup(placement: .navigationBarTrailing) {
       Button("System_Continue") {
         register()
       }
       .disabled(!registration.phoneNumberIsValid)
     }
+    #else
+    ToolbarItemGroup(placement: .navigation) {
+      Button("System_Continue") {
+        register()
+      }
+      .disabled(!registration.phoneNumberIsValid)
+    }
+    #endif
   }
   
   func register() {

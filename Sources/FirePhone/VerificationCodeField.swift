@@ -1,5 +1,5 @@
 import SwiftUI
-
+#if canImport(UIKit)
 struct VerificationCodeField: UIViewRepresentable {
   
   @Binding var code: String
@@ -85,3 +85,16 @@ struct VerificationCodeField_Previews: PreviewProvider {
       .frame(width: 200, height: 50)
   }
 }
+#else
+
+struct VerificationCodeField: View {
+  @Binding var code: String
+  var onSubmit: (()->())? = nil
+  var becomesFirstResponder = true
+  var body: some View {
+    Button("Test"){}
+  }
+}
+  
+
+#endif

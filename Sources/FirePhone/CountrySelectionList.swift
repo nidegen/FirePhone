@@ -15,7 +15,9 @@ struct CountrySelectionList: View {
     List {
       HStack {
         Image(systemName: "magnifyingglass")
+        #if canImport(UIKit)
           .foregroundColor(Color(UIColor.secondaryLabel))
+        #endif
         TextField("System_Search", text: $searchTerm)
         Spacer()
         if searchTerm != "" {
@@ -27,7 +29,9 @@ struct CountrySelectionList: View {
             Image(systemName: "xmark.circle.fill")
               .resizable()
               .frame(width: 16, height: 16)
+#if canImport(UIKit)
               .foregroundColor(Color(UIColor.tertiaryLabel))
+            #endif
           })
         }
       }
