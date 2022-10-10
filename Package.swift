@@ -14,7 +14,7 @@ let package = Package(
   ],
   dependencies: [
     .package(url: "https://github.com/marmelroy/PhoneNumberKit", from: "3.3.0"),
-    .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk", from: "8.8.0"),
+    .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk", from: "10.0.0"),
   ],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
