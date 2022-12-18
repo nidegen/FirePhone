@@ -7,7 +7,6 @@ let package = Package(
   name: "FirePhone",
   platforms: [.iOS("14.0"), .tvOS("14.0")],
   products: [
-    // Products define the executables and libraries a package produces, and make them visible to other packages.
     .library(
       name: "FirePhone",
       targets: ["FirePhone"]),
@@ -17,8 +16,7 @@ let package = Package(
     .package(name: "Firebase", url: "https://github.com/firebase/firebase-ios-sdk", from: "10.0.0"),
   ],
   targets: [
-    // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-    // Targets can depend on other targets in this package, and on products in packages this package depends on.
+
     .target(
       name: "FirePhone",
       dependencies: [
