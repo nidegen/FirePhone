@@ -21,8 +21,10 @@ class RegistrationViewModel: ObservableObject {
   @Published var changeVerificationId: String?
   @Published var changeVerificationCode = ""
   
-  
   @Published var didSubmitPhoneNumber = false
+  
+  @AppStorage("UserVerificationIdKey")
+  var userVerificationId: String?
   
   init() {
     var allCodes = phoneNumberKit.allCountries()
@@ -93,7 +95,7 @@ class RegistrationViewModel: ObservableObject {
       } else {
         completion?(.success(()))
         self.didRegister = true
-        UserDefaults.standard.set(verificationID, forKey: self.echoUserVerificationIdKey)
+        self.userVerificationId = verificationID
       }
     }
   }
@@ -133,7 +135,7 @@ class RegistrationViewModel: ObservableObject {
   }
   
   func verify(completion: @escaping ((Bool) -> ())) {
-    guard let verificationID = UserDefaults.standard.string(forKey: echoUserVerificationIdKey) else {
+    guard let verificationID = self.userVerificationId else {
       completion(false)
       return
     }
