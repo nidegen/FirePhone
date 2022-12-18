@@ -3,12 +3,9 @@ import PhoneNumberKit
 
 public struct RegisterView: View {
   @StateObject var registration = Registration()
-  @State var showVerificationScreen = false
-  
-  public init() {}
-  
+    
   public var body: some View {
-    if showVerificationScreen {
+    if registration.didSubmitPhoneNumber {
       VerificationView(registration: registration)
     } else {
       Form {
@@ -18,7 +15,9 @@ public struct RegisterView: View {
           } label: {
             HStack {
               Text("Auth_YourCountry")
+              
               Spacer()
+              
               HStack {
                 Text(registration.selectedCountry.flag)
                   .width(20)
@@ -27,22 +26,29 @@ public struct RegisterView: View {
               }
             }
           }
+          
           HStack {
             Text(registration.selectedCountry.prefix)
+            
             Divider()
+            
             PhoneNumberField(
               phoneNumber: $registration.phoneNumber,
               currentCountry: $registration.selectedCountry,
               validNumber: $registration.phoneNumberIsValid
             ) {
-              self.register()
+              registration.registerPhoneNumber()
             }
           }
           .font(.system(size: 32, weight: .light))
         }
       }
       .alert(item: $registration.alertMessage) { message in
-        Alert(title: Text(registration.alertTitle), message: Text(message), dismissButton: .default(Text("System_OK")))
+        Alert(
+          title: Text(registration.alertTitle),
+          message: Text(message),
+          dismissButton: .default(Text("System_OK"))
+        )
       }
       .toolbar {
         trailingItems
@@ -54,22 +60,9 @@ public struct RegisterView: View {
   var trailingItems: some ToolbarContent {
     ToolbarItemGroup(placement: .navigationBarTrailing) {
       Button("System_Continue") {
-        register()
+        registration.registerPhoneNumber()
       }
       .disabled(!registration.phoneNumberIsValid)
-    }
-  }
-  
-  func register() {
-    withAnimation {
-      showVerificationScreen = true
-    }
-
-    registration.register { result in
-      if case .failure(let error) = result {
-        showVerificationScreen = false
-        registration.alertMessage = error.localizedDescription
-      }
     }
   }
 }

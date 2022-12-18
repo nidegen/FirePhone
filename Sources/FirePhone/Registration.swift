@@ -22,6 +22,8 @@ class Registration: ObservableObject {
   @Published var changeVerificationCode = ""
   
   
+  @Published var didSubmitPhoneNumber = false
+  
   init() {
     var allCodes = phoneNumberKit.allCountries()
     allCodes = allCodes.filter { return $0 != "001" }.sorted {
@@ -145,6 +147,19 @@ class Registration: ObservableObject {
         self.isVerifying = false
       }
       completion(error == nil)
+    }
+  }
+  
+  func registerPhoneNumber() {
+    withAnimation {
+      didSubmitPhoneNumber = true
+    }
+
+    register { result in
+      if case .failure(let error) = result {
+        self.didSubmitPhoneNumber = false
+        self.alertMessage = error.localizedDescription
+      }
     }
   }
 }
