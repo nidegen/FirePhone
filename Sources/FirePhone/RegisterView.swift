@@ -2,7 +2,7 @@ import SwiftUI
 import PhoneNumberKit
 
 public struct RegisterView: View {
-  @StateObject var registration = Registration()
+  @StateObject var registration = RegistrationViewModel()
     
   public var body: some View {
     if registration.didSubmitPhoneNumber {

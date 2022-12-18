@@ -2,18 +2,21 @@ import SwiftUI
 import Combine
 
 public struct VerificationView: View {
-  @ObservedObject var registration: Registration
+  @ObservedObject var registration: RegistrationViewModel
   
   public var body: some View {
     VStack {
       Spacer()
+      
       VStack {
         Spacer().frame(height: 40)
+        
         VerificationCodeField(code: $registration.verificationCode) {
           registration.verifyCode()
         }
         .frame(width: 310, height: 50)
         .padding( 30)
+        
         Text("Auth_EnterCodeExpl")
           .multilineTextAlignment(.center)
           .frame(width: 180, height: 40)
@@ -35,9 +38,11 @@ public struct VerificationView: View {
       ZStack {
         Color(UIColor.systemBackground)
           .clipShape(RoundedRectangle(cornerRadius: 5))
+        
         VStack {
           ProgressView()
             .padding()
+        
           (Text("Auth_Verifying") + Text("..."))
             .font(.footnote)
         }
@@ -52,7 +57,7 @@ public struct VerificationView: View {
 struct VerificationView_Previews: PreviewProvider {
   static var previews: some View {
     NavigationView {
-      VerificationView(registration: Registration())
+      VerificationView(registration: RegistrationViewModel())
     }
   }
 }

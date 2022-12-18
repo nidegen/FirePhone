@@ -3,7 +3,7 @@ import SwiftUI
 struct CountrySelectionList: View {
   @Environment(\.presentationMode) var presentation
   @State private var searchTerm = ""
-  var registration: Registration
+  var registration: RegistrationViewModel
   
   var filteredCountries: [Country] {
     registration.countries.filter {
@@ -59,6 +59,6 @@ struct CountrySelectionList: View {
 
 struct CountrySelectionList_Previews: PreviewProvider {
   static var previews: some View {
-    CountrySelectionList(registration: Registration())
+    CountrySelectionList(registration: RegistrationViewModel())
   }
 }

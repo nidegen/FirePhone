@@ -3,7 +3,7 @@ import Firebase
 import PhoneNumberKit
 import SwiftUI
 
-class Registration: ObservableObject {
+class RegistrationViewModel: ObservableObject {
   @Published var phoneNumber = ""
   @Published var phoneNumberIsValid = false
   @Published var selectedCountry: Country

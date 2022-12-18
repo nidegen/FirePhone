@@ -2,7 +2,7 @@ import SwiftUI
 import Firebase
 
 public struct ChangeNumberView: View {
-  @StateObject var changer = Registration()
+  @StateObject var changer = RegistrationViewModel()
   
   public init(onSuccess: @escaping (String)->()) {
     self.onSuccess = onSuccess
