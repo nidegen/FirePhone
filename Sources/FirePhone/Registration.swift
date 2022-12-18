@@ -115,6 +115,7 @@ class Registration: ObservableObject {
       self.alertMessage = "Please enter a valid phone number."
       return
     }
+    
     PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
       
       if let error = error {

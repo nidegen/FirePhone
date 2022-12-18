@@ -61,11 +61,14 @@ public struct RegisterView: View {
   }
   
   func register() {
+    withAnimation {
+      showVerificationScreen = true
+    }
+
     registration.register { result in
-      if case .success = result {
-        withAnimation {
-          showVerificationScreen = true
-        }
+      if case .failure(let error) = result {
+        showVerificationScreen = false
+        registration.alertMessage = error.localizedDescription
       }
     }
   }
