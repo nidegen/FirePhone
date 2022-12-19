@@ -3,10 +3,15 @@ import PhoneNumberKit
 
 public struct RegisterView: View {
   @StateObject var registration = RegistrationViewModel()
-    
+  
+  public init() {}
+  
   public var body: some View {
-    if registration.didSubmitPhoneNumber {
+    if registration.didRegister {
       VerificationView(registration: registration)
+    } else if registration.didSubmitPhoneNumber {
+      ProgressView()
+        .ignoresSafeArea(.keyboard)
     } else {
       Form {
         Section() {

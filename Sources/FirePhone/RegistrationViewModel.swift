@@ -27,6 +27,8 @@ class RegistrationViewModel: ObservableObject {
   var userVerificationId: String?
   
   init() {
+    Auth.auth().useAppLanguage()
+    
     var allCodes = phoneNumberKit.allCountries()
     allCodes = allCodes.filter { return $0 != "001" }.sorted {
       let a = Locale.current.localizedString(forRegionCode: $0)?.folding(options: .diacriticInsensitive, locale: nil) ?? ""
@@ -63,8 +65,14 @@ class RegistrationViewModel: ObservableObject {
       verificationCode = filtered
     }
     if self.verificationCode.count == 6 && !didSendVerification {
-      self.verify { success in
-        if success {
+      Task {
+        do {
+          try await verify()
+        } catch {
+          self.verificationCode = ""
+          self.isVerifying = false
+          self.alertTitle = "Validation Code Error"
+          self.alertMessage = error.localizedDescription
           
         }
       }
@@ -78,34 +86,35 @@ class RegistrationViewModel: ObservableObject {
   private let echoUserVerificationIdKey = "EchoUserVerificationIdKey"
   // Should replace the current view states\
   
-  func register(completion: ((Result<Void, Error>)->())? = nil) {
-    
+  @MainActor
+  func register() async {
     if !phoneNumberIsValid {
       alertTitle = "Invalid Phone Number"
       alertMessage = "Please enter a valid phone number."
       return
     }
-    Auth.auth().languageCode = Locale.current.languageCode
     
-    PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil) { (verificationID, error) in
-      if let error = error {
-        self.alertTitle = "Error with \(PartialFormatter().formatPartial(self.formattedNumber))"
-        self.alertMessage = error.localizedDescription
-        completion?(.failure(error))
-      } else {
-        completion?(.success(()))
-        self.didRegister = true
-        self.userVerificationId = verificationID
-      }
+    withAnimation {
+      didSubmitPhoneNumber = true
+    }
+    
+    do {
+      self.userVerificationId = try await PhoneAuthProvider.provider().verifyPhoneNumber(formattedNumber, uiDelegate: nil)
+      self.didRegister = true
+    } catch {
+      self.alertTitle = "Error with \(PartialFormatter().formatPartial(self.formattedNumber))"
+      self.alertMessage = error.localizedDescription
+      self.didSubmitPhoneNumber = false
     }
   }
   
   func requestNumberChange(onSuccess: @escaping (String)->()) {
     let credential = PhoneAuthProvider.provider().credential(withVerificationID: changeVerificationId ?? "", verificationCode: changeVerificationCode)
     
+    
     Auth.auth().currentUser?.updatePhoneNumber(credential, completion: { (error) in
       if let error = error {
-        self.alertTitle = "Verification Error"
+        self.alertTitle = "Number Change Error"
         self.alertMessage = error.localizedDescription
       } else {
         onSuccess(self.formattedNumber)
@@ -134,22 +143,17 @@ class RegistrationViewModel: ObservableObject {
     }
   }
   
-  func verify(completion: @escaping ((Bool) -> ())) {
+  func verify() async throws {
     guard let verificationID = self.userVerificationId else {
-      completion(false)
-      return
+      throw FirePhoneError.missingUserVerificationId
     }
     self.isVerifying = true
-    let credential = PhoneAuthProvider.provider().credential(withVerificationID: verificationID,
-                                                             verificationCode: verificationCode)
+    let credential = PhoneAuthProvider.provider().credential(
+      withVerificationID: verificationID,
+      verificationCode: verificationCode
+    )
     
-    Auth.auth().signIn(with: credential) { (authResult, error) in
-      if error != nil {
-        self.verificationCode = ""
-        self.isVerifying = false
-      }
-      completion(error == nil)
-    }
+    try await Auth.auth().signIn(with: credential)
   }
   
   func registerPhoneNumber() {
@@ -157,11 +161,8 @@ class RegistrationViewModel: ObservableObject {
       didSubmitPhoneNumber = true
     }
 
-    register { result in
-      if case .failure(let error) = result {
-        self.didSubmitPhoneNumber = false
-        self.alertMessage = error.localizedDescription
-      }
+    Task {
+      await register()
     }
   }
 }
