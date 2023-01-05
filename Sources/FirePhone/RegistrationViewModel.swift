@@ -142,7 +142,8 @@ class RegistrationViewModel: ObservableObject {
       }
     }
   }
-  
+
+  @MainActor
   func verify() async throws {
     guard let verificationID = self.userVerificationId else {
       throw FirePhoneError.missingUserVerificationId
